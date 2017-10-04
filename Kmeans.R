@@ -124,20 +124,12 @@ new_dataset <- analytical[,c("COLLECTOR_KEY", "STD_CAP_VOL_R12", "STD_CAP_AMT_R1
 summary(new_dataset)
 print(model.km$centers)
 library(FNN)
-pred.knn <- data.frame(get.knnx(model.km$centers, new_dataset[,2:4], 5)$nn.index[,1])
+pred <- data.frame(get.knnx(model.km$centers, new_dataset[,2:4], 5)$nn.index[,1])
 
-count(pred.knn)
+count(pred)
 
 setnames(pred, "cluster_score")
 
 pred <- cbind(new_dataset,pred)
 
-# skip code below, just for demostration purpose to validate scoring code is working
-compare <- data.frame(cbind(pred$cluster_score, analytical$model.cluster))
-names(compare) <- c("cluster_score", "cluster_model")
-
-head(compare)
-
-# Load function
-source("http://pcwww.liv.ac.uk/~william/R/crosstab.r")
-crosstab(compare, row.vars = "cluster_score", col.vars = "cluster_model", type='f')
+write_sas(pred,'./clus_results.sas7bdat')
